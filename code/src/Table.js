@@ -12,6 +12,7 @@ const TableData = ({ data }) => {
           <Table.HeaderCell>LastUsed</Table.HeaderCell>
           <Table.HeaderCell>CummulativeCount</Table.HeaderCell>
           <Table.HeaderCell>AddedBy</Table.HeaderCell>
+          <Table.HeaderCell>AddedOn</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -25,6 +26,7 @@ const TableData = ({ data }) => {
             <Table.Cell>{row.LastUsed}</Table.Cell>
             <Table.Cell>{row.CummulativeCount}</Table.Cell>
             <Table.Cell>{row.AddedBy}</Table.Cell>
+            <Table.Cell>{row.AddedOn}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

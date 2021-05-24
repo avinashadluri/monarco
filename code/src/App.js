@@ -1,61 +1,91 @@
 import { useState, useEffect } from "react";
 import { Button, Form, Container, Header } from "semantic-ui-react";
 import axios from "axios";
+import { DateInput } from "semantic-ui-calendar-react";
 import TableData from "./Table";
 import "./App.css";
 
-function App() {
-  const [Name, setName] = useState("");
-  const [Contact, setContact] = useState("");
-  const [BusinessName, setBusinessName] = useState("");
-  const [TypeOfService, setTypeOfService] = useState("");
-  const [LastUsed, setLastUsed] = useState("");
-  const [CummulativeCount, setCummulativeCount] = useState("");
-  const [AddedBy, setAddedBy] = useState("");
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  let isDisabled =
-    !Name &&
-    !Contact &&
-    !BusinessName &&
-    !TypeOfService &&
-    !LastUsed &&
-    !CummulativeCount &&
-    !AddedBy;
+const API =
+  "https://sheet.best/api/sheets/11a66d7e-2aee-4fd7-be05-98973acbfd1e";
 
-  const API =
-    "https://sheet.best/api/sheets/11a66d7e-2aee-4fd7-be05-98973acbfd1e";
+const App = () => {
+  const [state, setState] = useState({
+    Name: "",
+    Contact: "",
+    BusinessName: "",
+    TypeOfService: "",
+    LastUsed: "",
+    CummulativeCount: "",
+    AddedBy: "",
+    data: [],
+    loading: true,
+  });
+
+  const {
+    Name,
+    Contact,
+    BusinessName,
+    TypeOfService,
+    LastUsed,
+    CummulativeCount,
+    AddedBy,
+    data,
+    loading,
+  } = state;
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (
+      Name &&
+      Contact &&
+      BusinessName &&
+      TypeOfService &&
+      LastUsed &&
+      CummulativeCount &&
+      AddedBy
+    ) {
+      const body = {
+        Name,
+        Contact,
+        BusinessName,
+        TypeOfService,
+        LastUsed,
+        CummulativeCount,
+        AddedBy,
+        AddedOn: new Date().toDateString(),
+      };
 
-    const body = {
-      Name,
-      Contact,
-      BusinessName,
-      TypeOfService,
-      LastUsed,
-      CummulativeCount,
-      AddedBy,
-    };
-
-    axios.post(API, body).then((response) => {
-      setData([...data, response.data[0]]);
-    });
+      axios.post(API, body).then((response) => {
+        setState({ ...state, data: [...state.data, response.data[0]] });
+      });
+    } else {
+      alert("Please fill the form");
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       await axios.get(API).then((response) => {
-        setData(response.data);
+        setState({ ...state, data: response.data, loading: false });
       });
-      setLoading(false);
     };
     fetchData();
   }, []);
 
-  if (loading) return <h2>Loading....</h2>;
+  const setFields = (elem) => {
+    setState({
+      ...state,
+      [elem.target.name]: elem.target.value,
+    });
+  };
 
+  const setDate = (event, { name, value }) => {
+    setState({
+      ...state,
+      [name]: value,
+    });
+  };
+  if (loading) return <h2>Loading....</h2>;
   return (
     <Container fluid className="container">
       <Header as="h2">Monarco vendor data</Header>
@@ -64,58 +94,74 @@ function App() {
           <label>Name</label>
           <input
             placeholder="Enter your Name"
-            onChange={(e) => setName(e.target.value)}
+            name="Name"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <Form.Field>
           <label>Contact</label>
           <input
             placeholder="Enter Contact"
-            onChange={(e) => setContact(e.target.value)}
+            name="Contact"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <Form.Field>
           <label>Business Name</label>
           <input
             placeholder="Enter Business Name"
-            onChange={(e) => setBusinessName(e.target.value)}
+            name="BusinessName"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <Form.Field>
           <label>Type Of Service</label>
           <input
             placeholder="Enter Type Of Service"
-            onChange={(e) => setTypeOfService(e.target.value)}
+            name="TypeOfService"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <Form.Field>
           <label>Last Used</label>
-          <input
+          <DateInput
+            name="LastUsed"
             placeholder="Enter Last Used"
-            onChange={(e) => setLastUsed(e.target.value)}
+            value={LastUsed}
+            iconPosition="left"
+            onChange={setDate}
           />
         </Form.Field>
         <Form.Field>
           <label>Cummulative Count</label>
           <input
             placeholder="Enter Cummulative Count"
-            onChange={(e) => setCummulativeCount(e.target.value)}
+            name="CummulativeCount"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <Form.Field>
           <label>Added By</label>
           <input
             placeholder="Enter Added By (Avinash, 510, D ...)"
-            onChange={(e) => setAddedBy(e.target.value)}
+            name="AddedBy"
+            onChange={(e) => {
+              setFields(e);
+            }}
           />
         </Form.Field>
         <div className="navigation">
-          <Button
-            color="blue"
-            type="submit"
-            onClick={handleSubmit}
-            disabled={isDisabled}
-          >
+          <Button color="blue" type="submit" onClick={handleSubmit}>
             Submit
           </Button>
         </div>
@@ -124,6 +170,6 @@ function App() {
       <TableData data={data} />
     </Container>
   );
-}
+};
 
 export default App;
