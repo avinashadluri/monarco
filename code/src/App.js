@@ -14,9 +14,17 @@ function App() {
   const [AddedBy, setAddedBy] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  let isDisabled =
+    !Name &&
+    !Contact &&
+    !BusinessName &&
+    !TypeOfService &&
+    !LastUsed &&
+    !CummulativeCount &&
+    !AddedBy;
 
   const API =
-    "https://sheet.best/api/sheets/7e4c31b8-5cb4-4fab-9fea-a288753da5d1";
+    "https://sheet.best/api/sheets/11a66d7e-2aee-4fd7-be05-98973acbfd1e";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,7 +41,6 @@ function App() {
 
     axios.post(API, body).then((response) => {
       setData([...data, response.data[0]]);
-      console.log(response.data[0]);
     });
   };
 
@@ -103,7 +110,12 @@ function App() {
           />
         </Form.Field>
         <div className="navigation">
-          <Button color="blue" type="submit" onClick={handleSubmit}>
+          <Button
+            color="blue"
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isDisabled}
+          >
             Submit
           </Button>
         </div>
