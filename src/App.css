@@ -1,0 +1,14 @@
+.form {
+  width: 500px;
+}
+
+.container {
+  padding: 20px;
+}
+.ui.header:first-child,
+.navigation {
+  text-align: center;
+}
+.ui.form {
+  margin: 0 auto !important;
+}
